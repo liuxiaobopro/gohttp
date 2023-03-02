@@ -15,7 +15,7 @@ func main() {
 	r := gin.Default()
 
 	r.Use(middleware.Trace())
-	r.Static("static", "front/static")
+	r.Static("static", "./front/static")
 	r.LoadHTMLGlob("front/view/**/*")
 
 	r.GET("/", func(c *gin.Context) {
