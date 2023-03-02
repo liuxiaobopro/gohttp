@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gohttp/middleware"
 	"io/ioutil"
 	"net/http"
@@ -16,7 +15,8 @@ func main() {
 	r := gin.Default()
 
 	r.Use(middleware.Trace())
-	r.LoadHTMLGlob("view/**/*")
+	r.Static("static", "front/static")
+	r.LoadHTMLGlob("front/view/**/*")
 
 	r.GET("/", func(c *gin.Context) {
 		logrus.Infof("Hello World! %s", time.Now())
@@ -25,36 +25,33 @@ func main() {
 		})
 	})
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-
-	r.GET("/log", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "log/index.html", reeaDir)
-	})
+	r.GET("/log", readDir)
 
 	// 监听服务
 	r.Run(":9000")
 }
 
-func reeaDir() *gin.H {
+func readDir(c *gin.Context) {
+	resData := make(gin.H, 0)
 	// 获取testlog目录下所有文件和文件夹
 	files, err := ioutil.ReadDir("./testlog")
 	if err != nil {
 		logrus.Errorf("ReadDir failed, err:%v \n", err)
 	}
 
+	file1 := make([]string, 0)
+	file2 := make([]string, 0)
 	for _, v := range files {
 		if v.IsDir() {
-			fmt.Println("dir:", v.Name())
+			file1 = append(file1, v.Name())
 		} else {
-			fmt.Println("file:", v.Name())
+			file2 = append(file2, v.Name())
 		}
 	}
 
-	return &gin.H{
-		"message": "pong",
-	}
+	file1 = append(file1, file2...)
+
+	resData["files"] = file1
+
+	c.HTML(http.StatusOK, "log/index.html", resData)
 }
