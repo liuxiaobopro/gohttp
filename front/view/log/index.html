@@ -8,34 +8,87 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="static/css/layui.css">
-    <script src="static/layui.js"></script>
+    <link rel="stylesheet" href="static/layui/css/layui.css">
+    <script src="static/layui/layui.js"></script>
+
+    <style>
+        body {
+            padding: 50px;
+            display: flex;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="layui-row">
-        <div class="layui-col-xs6">
-            <div class="grid-demo grid-demo-bg1">6/12</div>
-        </div>
-        <div class="layui-col-xs6">
-            <div class="grid-demo">6/12</div>
-        </div>
+    <div style="width: 30%">
+        <div id="menu" style="width: 400px; height: 800px; overflow: scroll;"></div>
     </div>
-    <div class="layui-row">
-        <div class="layui-col-xs3">
-            <div class="grid-demo grid-demo-bg1">3/12</div>
-        </div>
-        <div class="layui-col-xs3">
-            <div class="grid-demo">3/12</div>
-        </div>
-        <div class="layui-col-xs3">
-            <div class="grid-demo grid-demo-bg1">3/12</div>
-        </div>
-        <div class="layui-col-xs3">
-            <div class="grid-demo">3/12</div>
-        </div>
+    <div id="content">
+
     </div>
 </body>
+
+<script>
+    layui.use(['tree'], function () {
+        var tree = layui.tree
+            , layer = layui.layer
+            , $ = layui.jquery
+            //模拟数据1
+            , data1 = [{
+                title: '江西'
+                , id: 1
+                , children: [{
+                    title: '南昌'
+                    , id: 1000
+                    , children: [{
+                        title: '青山湖区'
+                        , id: 10001
+                    }, {
+                        title: '高新区'
+                        , id: 10002
+                    }]
+                }, {
+                    title: '九江'
+                    , id: 1001
+                }, {
+                    title: '赣州'
+                    , id: 1002
+                }]
+            }, {
+                title: '广西'
+                , id: 2
+                , children: [{
+                    title: '南宁'
+                    , id: 2000
+                }, {
+                    title: '桂林'
+                    , id: 2001
+                }]
+            }, {
+                title: '陕西'
+                , id: 3
+                , children: [{
+                    title: '西安'
+                    , id: 3000
+                }, {
+                    title: '延安'
+                    , id: 3001
+                }]
+            }]
+
+        //开启节点操作图标
+        tree.render({
+            elem: '#menu'
+            , data: data1
+            , click: function (obj) {
+                jsonObj = obj.data
+                $("#content").html(JSON.stringify(jsonObj, null, 4));
+            }
+        });
+    });
+
+
+</script>
 
 </html>
 
