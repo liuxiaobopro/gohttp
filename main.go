@@ -18,20 +18,21 @@ func main() {
 	r.Static("static", "front/static")
 	r.LoadHTMLGlob("front/view/**/*")
 
-	r.GET("/", func(c *gin.Context) {
-		logrus.Infof("Hello World! %s", time.Now())
-		c.JSON(http.StatusOK, gin.H{
-			"message": time.Now(),
-		})
-	})
+	r.GET("/", ViewIndexIndex)
 
-	r.GET("/log", readDir)
+	r.GET("/log", ViewLogIndex)
 
 	// 监听服务
 	r.Run(":9000")
 }
 
-func readDir(c *gin.Context) {
+func ViewIndexIndex(c *gin.Context) {
+	resData := make(gin.H, 0)
+	resData["time"] = time.Now().Format("2006-01-02 15:04:05")
+	c.HTML(http.StatusOK, "index/index.html", resData)
+}
+
+func ViewLogIndex(c *gin.Context) {
 	resData := make(gin.H, 0)
 	// 获取testlog目录下所有文件和文件夹
 	files, err := ioutil.ReadDir("./testlog")

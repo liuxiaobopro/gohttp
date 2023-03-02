@@ -12,19 +12,24 @@
     <script src="static/layui/layui.js"></script>
 
     <style>
-        body {
-            padding: 50px;
+        .main {
+            padding: 30px;
             display: flex;
         }
     </style>
 </head>
 
 <body>
-    <div style="width: 30%">
-        <div id="menu" style="width: 400px; height: 800px; overflow: scroll;"></div>
-    </div>
-    <div id="content"  style="width: 900px;margin-left: 10px;">
-        <pre class="logdata" lay-height="700px">文件内容会在这里展示呦！</pre>
+    <button type="button" class="layui-btn layui-btn-primary" >
+        <a href="/">首页</a>
+    </button>
+    <div class="main">
+        <div style="width: 30%">
+            <div id="menu" style="width: 400px; height: 800px; overflow: scroll;"></div>
+        </div>
+        <div id="content"  style="width: 900px;margin-left: 10px;">
+            <pre class="logdata" lay-height="700px">文件内容会在这里展示呦！</pre>
+        </div>
     </div>
 </body>
 
