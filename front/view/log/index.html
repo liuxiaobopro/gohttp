@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>文件查询</title>
     <link rel="stylesheet" href="static/layui/css/layui.css">
     <script src="static/layui/layui.js"></script>
 
@@ -23,13 +23,14 @@
     <div style="width: 30%">
         <div id="menu" style="width: 400px; height: 800px; overflow: scroll;"></div>
     </div>
-    <div id="content">
-
+    <div id="content"  style="width: 900px;margin-left: 10px;">
+        <pre class="logdata" lay-height="700px">文件内容会在这里展示呦！</pre>
     </div>
 </body>
 
 <script>
-    layui.use(['tree'], function () {
+    layui.use(['tree', 'code'], function () {
+        layui.code()
         var tree = layui.tree
             , layer = layui.layer
             , $ = layui.jquery
@@ -82,7 +83,7 @@
             , data: data1
             , click: function (obj) {
                 jsonObj = obj.data
-                $("#content").html(JSON.stringify(jsonObj, null, 4));
+                $("#content .logdata").html(JSON.stringify(jsonObj, null, 4));
             }
         });
     });
