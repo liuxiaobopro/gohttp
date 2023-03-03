@@ -42,9 +42,11 @@
         var tree = layui.tree
             , layer = layui.layer
             , $ = layui.jquery
+        var filepath
+        var filename
 
         $("input[name=filepath]").blur(function () {
-            var filepath = $(this).val()
+            filepath = $(this).val()
             //console.log("filepath:", filepath);
             $.ajax({
                 async: true,
@@ -68,6 +70,8 @@
                         jsonObj = obj.data
                         // $("#content .logdata").html(JSON.stringify(jsonObj, null, 4));
                         // showFolds(jsonObj.pathId)
+                        filepath = jsonObj.path
+                        filename = jsonObj.name
                         readfile(jsonObj.path, jsonObj.name)
                     }
                 });
@@ -78,7 +82,11 @@
             }
         })
 
-        function readfile(path, name) {
+        function readfile() {
+            console.log("filepath:", filepath);
+            console.log("filename:", filename);
+            layer.msg('正在读取文件，请稍等...', { icon: 16, shade: 0.01, time: 0 });
+            var path, name = filepath, filename
             $.ajax({
                 async: true,
                 url: '/api/read_file',
@@ -88,6 +96,7 @@
                 timeout: 30000,
                 success: successCallback,
                 error: errorCallback,
+                complete: completeCallback
             })
 
             function successCallback(res) {
@@ -97,6 +106,10 @@
 
             function errorCallback(err, status) {
                 console.error("err:", err)
+            }
+
+            function completeCallback(xhr, status) {
+                layer.closeAll();
             }
         }
     });
