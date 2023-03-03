@@ -24,7 +24,7 @@
         首页
     </button>
     <div class="main">
-        <div style="width: 20%">
+        <div style="width: 450px">
             <input type="text" style="width: 400px;" name="filepath" lay-verify="title" autocomplete="off"
                 placeholder="请输入路径(失焦搜索)" class="layui-input" value="D:\1_project\github\PowerWechatTutorial">
 
@@ -39,11 +39,11 @@
 <script>
     layui.use(['tree', 'code'], function () {
         layui.code()
-        var tree = layui.tree
-            , layer = layui.layer
-            , $ = layui.jquery
-        var filepath
-        var filename
+        var tree = layui.tree, layer = layui.layer, $ = layui.jquery
+
+        var filepath1
+        var filename1
+        var page = 10
 
         $("input[name=filepath]").blur(function () {
             filepath = $(this).val()
@@ -68,11 +68,9 @@
                     , accordion: true //开启手风琴模式
                     , click: function (obj) {
                         jsonObj = obj.data
-                        // $("#content .logdata").html(JSON.stringify(jsonObj, null, 4));
-                        // showFolds(jsonObj.pathId)
-                        filepath = jsonObj.path
-                        filename = jsonObj.name
-                        readfile(jsonObj.path, jsonObj.name)
+                        filepath1 = jsonObj.path
+                        filename1 = jsonObj.name
+                        readfile()
                     }
                 });
             }
@@ -83,15 +81,18 @@
         })
 
         function readfile() {
-            console.log("filepath:", filepath);
-            console.log("filename:", filename);
+            console.log("filepath1:", filepath1);
+            console.log("filename1:", filename1);
             layer.msg('正在读取文件，请稍等...', { icon: 16, shade: 0.01, time: 0 });
-            var path, name = filepath, filename
             $.ajax({
                 async: true,
                 url: '/api/read_file',
                 type: 'GET',
-                data: { path: path, name: name },
+                data: {
+                    path: filepath1,
+                    name: filename1,
+                    page: page,
+                },
                 dataType: 'json',
                 timeout: 30000,
                 success: successCallback,

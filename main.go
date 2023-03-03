@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"gohttp/back/middleware"
+	modelReq "gohttp/back/model/req"
 	modelRes "gohttp/back/model/res"
 
 	"github.com/gin-gonic/gin"
@@ -38,6 +40,22 @@ func main() {
 		rg2.GET("/read_file", ReadFile)
 	}
 	//#endregion
+
+	// fp := "D:\\1_project\\github\\PowerWechatTutorial\\log.txt"
+
+	// // 写入10w行数据
+	// f, err := os.OpenFile(fp, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	// if err != nil {
+	// 	fmt.Println("open file err=", err)
+	// 	return
+	// }
+	// defer f.Close()
+
+	// // 循环写入
+	// for i := 1; i <= 10000; i++ {
+	// 	s := fmt.Sprintf("%010d ## \r\n", i)
+	// 	f.WriteString(s)
+	// }
 
 	r.Run(":9000")
 }
@@ -191,10 +209,19 @@ func ShowFolds(c *gin.Context) {
 
 func ReadFile(c *gin.Context) {
 	//#region 获取参数
-	pathParam := c.Query("path")
-	nameParam := c.Query("name")
-	if pathParam == "" || nameParam == "" {
-		c.JSON(http.StatusBadRequest, "path is empty")
+	var r modelReq.LogIndexReadFileReq
+	if err := c.ShouldBind(&r); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	limit := 1000
+
+	n := (r.Page - 1) * limit
+	m := limit
+
+	if r.Path == "" || r.Name == "" {
+		c.JSON(http.StatusBadRequest, "参数错误")
 		return
 	}
 	//#endregion
@@ -202,36 +229,42 @@ func ReadFile(c *gin.Context) {
 	//#region 拼接文件路径
 	var filepath string
 	if runtime.GOOS == "windows" {
-		filepath = fmt.Sprintf("%s\\%s", pathParam, nameParam)
+		filepath = fmt.Sprintf("%s\\%s", r.Path, r.Name)
 	} else {
-		filepath = fmt.Sprintf("%s/%s", pathParam, nameParam)
+		filepath = fmt.Sprintf("%s/%s", r.Path, r.Name)
 	}
 	//#endregion
 
-	fmt.Println("filepath: ", filepath)
+	logrus.Infof("filepath: %s", filepath)
 
 	//#region 读取文件
 	file, err := os.Open(filepath)
 	if err != nil {
-		logrus.Errorf("open file error: %v", err)
+		logrus.Errorf("打开文件错误: %v", err)
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	defer file.Close()
 
-	var (
-		fileInfo, _ = file.Stat()
-		fileSize    = fileInfo.Size()
-		buffer      = make([]byte, fileSize)
-	)
+	scanner := bufio.NewScanner(file)
+	lines := make([]string, 0, m)
 
-	_, err = file.Read(buffer)
-	if err != nil {
-		logrus.Errorf("read file error: %v", err)
+	// 跳过前n-1行
+	for i := 1; i <= n && scanner.Scan(); i++ {
+		// do nothing
+	}
+
+	// 读取n到n+m-1行
+	for i := 1; i <= m && scanner.Scan(); i++ {
+		lines = append(lines, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		logrus.Errorf("读取文件错误: %v", err)
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	//#endregion
 
-	c.JSON(http.StatusOK, string(buffer))
+	c.JSON(http.StatusOK, lines)
 }
