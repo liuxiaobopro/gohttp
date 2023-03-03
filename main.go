@@ -27,7 +27,12 @@ func main() {
 func ViewIndexIndex(c *gin.Context) {
 	resData := make(gin.H, 0)
 	resData["time"] = time.Now().Format("2006-01-02 15:04:05")
+	showFold()
 	c.HTML(http.StatusOK, "index/index.html", resData)
+}
+
+func showFold() {
+	
 }
 
 func ViewLogIndex(c *gin.Context) {
