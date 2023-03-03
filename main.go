@@ -256,7 +256,7 @@ func ReadFile(c *gin.Context) {
 
 	// 读取n到n+m-1行
 	for i := 1; i <= m && scanner.Scan(); i++ {
-		lines = append(lines, scanner.Text())
+		lines = append(lines, scanner.Text()+"\n")
 	}
 
 	if err := scanner.Err(); err != nil {
