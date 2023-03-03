@@ -1,17 +1,17 @@
 package main
 
 import (
-	"gohttp/middleware"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"gohttp/back/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	// 初始化一个gin实例
 	r := gin.Default()
 
 	r.Use(middleware.Trace())
@@ -19,10 +19,8 @@ func main() {
 	r.LoadHTMLGlob("front/view/**/*")
 
 	r.GET("/", ViewIndexIndex)
-
 	r.GET("/log", ViewLogIndex)
 
-	// 监听服务
 	r.Run(":9000")
 }
 
