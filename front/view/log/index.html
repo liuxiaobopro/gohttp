@@ -25,10 +25,13 @@
     </button>
     <div class="main">
         <div style="width: 30%">
+            <input type="text" style="width: 400px;" name="filepath" lay-verify="title" autocomplete="off"
+                placeholder="请输入路径(失焦搜索)" class="layui-input" value="D:\1_project\github\PowerWechatTutorial">
+
             <div id="menu" style="width: 400px; height: 800px; overflow: scroll;"></div>
         </div>
-        <div id="content" style="width: 900px;margin-left: 10px;height: 750px;">
-            <pre class="logdata" lay-height="700px">文件内容会在这里展示呦！</pre>
+        <div id="content" style="width: 900px;margin-left: 10px;height: 830px;overflow: scroll;">
+            <pre class="logdata">文件内容会在这里展示呦！</pre>
         </div>
     </div>
 </body>
@@ -40,14 +43,14 @@
             , layer = layui.layer
             , $ = layui.jquery
 
-        showFolds()
-        function showFolds(pathId) {
-            menuList = []
+        $("input[name=filepath]").blur(function () {
+            var filepath = $(this).val()
+            //console.log("filepath:", filepath);
             $.ajax({
                 async: true,
-                url: '/api/show_fold',
+                url: '/api/open_fold',
                 type: 'GET',
-                data: { pathId: pathId },
+                data: { filepath: filepath },
                 dataType: 'json',
                 timeout: 30000,
                 success: successCallback,
@@ -56,22 +59,40 @@
 
             function successCallback(res) {
                 console.log("res:", res);
-
-                if (menuList.length == 0) {
-                    menuList = res
-                }
-
                 tree.render({
                     elem: '#menu'
-                    , data: menuList
+                    , data: res
                     , showLine: false //是否开启连接线
                     , accordion: true //开启手风琴模式
                     , click: function (obj) {
                         jsonObj = obj.data
                         // $("#content .logdata").html(JSON.stringify(jsonObj, null, 4));
-                        showFolds(jsonObj.pathId)
+                        // showFolds(jsonObj.pathId)
+                        readfile(jsonObj.path, jsonObj.name)
                     }
                 });
+            }
+
+            function errorCallback(err, status) {
+                console.error("err:", err)
+            }
+        })
+
+        function readfile(path, name) {
+            $.ajax({
+                async: true,
+                url: '/api/read_file',
+                type: 'GET',
+                data: { path: path, name: name },
+                dataType: 'json',
+                timeout: 30000,
+                success: successCallback,
+                error: errorCallback,
+            })
+
+            function successCallback(res) {
+                //console.log("res:", res);
+                $("#content .logdata").html(res);
             }
 
             function errorCallback(err, status) {
