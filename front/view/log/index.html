@@ -27,7 +27,7 @@
         <div style="width: 30%">
             <div id="menu" style="width: 400px; height: 800px; overflow: scroll;"></div>
         </div>
-        <div id="content"  style="width: 900px;margin-left: 10px;">
+        <div id="content" style="width: 900px;margin-left: 10px;height: 750px;">
             <pre class="logdata" lay-height="700px">文件内容会在这里展示呦！</pre>
         </div>
     </div>
@@ -39,58 +39,50 @@
         var tree = layui.tree
             , layer = layui.layer
             , $ = layui.jquery
-            //模拟数据1
-            , data1 = [{
-                title: '江西'
-                , id: 1
-                , children: [{
-                    title: '南昌'
-                    , id: 1000
-                    , children: [{
-                        title: '青山湖区'
-                        , id: 10001
-                    }, {
-                        title: '高新区'
-                        , id: 10002
-                    }]
-                }, {
-                    title: '九江'
-                    , id: 1001
-                }, {
-                    title: '赣州'
-                    , id: 1002
-                }]
-            }, {
-                title: '广西'
-                , id: 2
-                , children: [{
-                    title: '南宁'
-                    , id: 2000
-                }, {
-                    title: '桂林'
-                    , id: 2001
-                }]
-            }, {
-                title: '陕西'
-                , id: 3
-                , children: [{
-                    title: '西安'
-                    , id: 3000
-                }, {
-                    title: '延安'
-                    , id: 3001
-                }]
-            }]
 
-        //开启节点操作图标
-        tree.render({
-            elem: '#menu'
-            , data: data1
-            , click: function (obj) {
-                jsonObj = obj.data
-                $("#content .logdata").html(JSON.stringify(jsonObj, null, 4));
+        showFolds()
+        function showFolds(pathId) {
+            menuList = []
+            $.ajax({
+                async: true,
+                url: '/api/show_fold',
+                type: 'GET',
+                data: { pathId: pathId },
+                dataType: 'json',
+                timeout: 30000,
+                success: successCallback,
+                error: errorCallback,
+                complete: completeCallback
+            })
+
+            function successCallback(res) {
+                console.log("res:", res);
+
+                if (menuList.length == 0) {
+                    menuList = res
+                }
+
+                tree.render({
+                    elem: '#menu'
+                    , data: menuList
+                    , showLine: false //是否开启连接线
+                    , accordion: true //开启手风琴模式
+                    , click: function (obj) {
+                        jsonObj = obj.data
+                        // $("#content .logdata").html(JSON.stringify(jsonObj, null, 4));
+                        showFolds(jsonObj.pathId)
+                    }
+                });
             }
-        });
+
+            function errorCallback(err, status) {
+                console.error("err:", err)
+            }
+
+            function completeCallback(xhr, status) {
+                console.log('Ajax请求已结束。');
+            }
+        }
     });
 
 
