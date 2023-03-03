@@ -52,7 +52,6 @@
                 timeout: 30000,
                 success: successCallback,
                 error: errorCallback,
-                complete: completeCallback
             })
 
             function successCallback(res) {
@@ -77,10 +76,6 @@
 
             function errorCallback(err, status) {
                 console.error("err:", err)
-            }
-
-            function completeCallback(xhr, status) {
-                console.log('Ajax请求已结束。');
             }
         }
     });

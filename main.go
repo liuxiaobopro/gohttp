@@ -75,6 +75,7 @@ func ShowFolds(c *gin.Context) {
 
 		//#region 整理数据
 		for k, drive := range drives {
+			id := strconv.Itoa(k)
 			// 读取目录中的所有文件和子目录
 			entries, err := os.ReadDir(drive)
 			if err != nil {
@@ -92,21 +93,22 @@ func ShowFolds(c *gin.Context) {
 			for k1, entry := range entries {
 				var (
 					title string
+					id1   = strconv.Itoa(k1)
 				)
 
 				if entry.IsDir() {
 					title = "<span class=\"layui-badge layui-bg-orange\">F</span>" + entry.Name()
 					menuChildList1 = append(menuChildList1, &modelRes.LogIndexShowFoldsRes{
 						Title:  title,
-						Id:     k1 + 1,
-						PathId: fmt.Sprintf("%d-%d", k, k1),
+						Id:     id1,
+						PathId: fmt.Sprintf("%s-%s", id, id1),
 					})
 				} else {
 					title = "<span class=\"layui-badge layui-bg-green\">D</span>" + entry.Name()
 					menuChildList2 = append(menuChildList2, &modelRes.LogIndexShowFoldsRes{
 						Title:  title,
-						Id:     k1 + 1,
-						PathId: fmt.Sprintf("%d-%d", k, k1),
+						Id:     id1,
+						PathId: fmt.Sprintf("%s-%s", id, id1),
 					})
 				}
 			}
@@ -115,8 +117,8 @@ func ShowFolds(c *gin.Context) {
 
 			menuList = append(menuList, &modelRes.LogIndexShowFoldsRes{
 				Title:    drive,
-				Id:       k,
-				PathId:   strconv.Itoa(k),
+				Id:       id,
+				PathId:   id,
 				Children: menuChildList,
 			})
 		}
