@@ -7,31 +7,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件查询</title>
+    <title>标题</title>
     <link rel="stylesheet" href="static/layui/css/layui.css">
     <script src="static/layui/layui.js"></script>
-
-    <style>
-        .main {
-            padding: 30px;
-            display: flex;
-        }
-    </style>
 </head>
 
 <body>
-    <button type="button" class="layui-btn layui-btn-primary" onclick="location.href='/'">
-        首页
-    </button>
-    <div class="main">
+    <button type="button" class="btn btn-primary" onclick="location.href='/'">首页</button>
+    <div style="padding: 30px;display: flex;">
         <div style="width: 450px">
             <input type="text" style="width: 400px;" name="filepath" lay-verify="title" autocomplete="off"
-                placeholder="请输入路径(失焦搜索)" class="layui-input" value="D:\1_project\github\PowerWechatTutorial">
+                placeholder="请输入路径(失焦搜索)" class="layui-input" value="D:\1_liuxiaobo\testlog">
 
             <div id="menu" style="width: 400px; height: 800px; overflow: scroll;"></div>
         </div>
         <div id="content" style="width: 900px;height: 830px;overflow: scroll;">
-            <pre class="logdata">文件内容会在这里展示呦！</pre>
+            <pre class="layui-code logdata">{{.code}}</pre>
         </div>
     </div>
 </body>

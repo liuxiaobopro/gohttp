@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	"gohttp/back/middleware"
@@ -41,7 +42,7 @@ func main() {
 	}
 	//#endregion
 
-	// fp := "D:\\1_project\\github\\PowerWechatTutorial\\log.txt"
+	// fp := "D:\\1_liuxiaobo\\testlog\\log.txt"
 
 	// // 写入10w行数据
 	// f, err := os.OpenFile(fp, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
@@ -63,11 +64,21 @@ func main() {
 func ViewIndexIndex(c *gin.Context) {
 	resData := make(gin.H, 0)
 	resData["time"] = time.Now().Format("2006-01-02 15:04:05")
-	c.HTML(http.StatusOK, "index/index.html", resData)
+	c.HTML(http.StatusOK, "index.html", resData)
 }
 
 func ViewLogIndex(c *gin.Context) {
 	resData := make(gin.H, 0)
+
+	//#region 读取文件
+	lines, err := readFile("D:\\1_liuxiaobo\\testlog\\log.txt", 1000, 0)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	//#endregion
+
+	resData["code"] = lines
 
 	c.HTML(http.StatusOK, "log/index.html", resData)
 }
@@ -233,16 +244,34 @@ func ReadFile(c *gin.Context) {
 	} else {
 		filepath = fmt.Sprintf("%s/%s", r.Path, r.Name)
 	}
+	logrus.Infof("filepath: %s", filepath)
 	//#endregion
 
-	logrus.Infof("filepath: %s", filepath)
-
 	//#region 读取文件
+	lines, err := readFile(filepath, m, n)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	//#endregion
+
+	c.JSON(http.StatusOK, lines)
+}
+
+/**
+ * 读取文件
+ *
+ * @param filepath 文件路径
+ * @param m 读取行数
+ * @param n 跳过行数
+ * @return []string
+ * @return error
+ */
+func readFile(filepath string, m, n int) (string, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		logrus.Errorf("打开文件错误: %v", err)
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
+		return "", err
 	}
 	defer file.Close()
 
@@ -251,20 +280,17 @@ func ReadFile(c *gin.Context) {
 
 	// 跳过前n-1行
 	for i := 1; i <= n && scanner.Scan(); i++ {
-		// do nothing
 	}
 
-	// 读取n到n+m-1行
 	for i := 1; i <= m && scanner.Scan(); i++ {
-		lines = append(lines, scanner.Text()+"\n")
+		lines = append(lines, scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
 		logrus.Errorf("读取文件错误: %v", err)
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
+		return "", err
 	}
-	//#endregion
 
-	c.JSON(http.StatusOK, lines)
+	str := strings.Join(lines, "\n")
+	return str, nil
 }

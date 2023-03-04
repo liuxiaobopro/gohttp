@@ -1,42 +1,10 @@
-{{define "index/index.html"}}
+{{template "base.html" .}}
 
-<!DOCTYPE html>
-<html lang="en">
+{{define "css"}}
+{{end}}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/layui/css/layui.css">
-    <script src="static/layui/layui.js"></script>
-    <title>首页</title>
-    <style>
-        .title {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 10vh;
-        }
+{{define "body"}}
+{{end}}
 
-        .menu {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="title">
-        {{.time}}
-    </div>
-    <div class="menu">
-        <a href="/log">文件查看1</a>
-        <a href="/log">文件查看2</a>
-    </div>
-</body>
-
-</html>
-
+{{define "js"}}
 {{end}}
