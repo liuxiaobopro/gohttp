@@ -183,3 +183,4 @@ $RECYCLE.BIN/
 
 .history/
 testlog/
+*.log
